@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+  fdss:
+    build: .
+    command: sh -c "./start_sidekiq.sh & ./start_web.sh"
+    volumes:
+      - .:/app
+    ports:
+      - 3001:3000
+    environment:
+      PORT: 3000
+      FDSS_DATABASE_HOST: postgres # 数据库的服务名称
+      FDSS_DATABASE_USERNAME: postgres # 数据库用户名
+      FDSS_DATABASE_PASSWORD: 12345678 # 数据库密码
+      FDSS_DATABASE_PORT: 5432 # 数据库端口
+      FDS_WAN_ADDRESS: http://example.com:3000  # 中心端的外网访问地址
+#      FDSS_WAN_ADDRESS: http://example.com:3001 # 分布端的外网访问地址（这里分布端可以不需要外网访问地址的），默认不配置
+      FDSS_LAN_ADDRESS: http://localhost:3001 # 分布端局域网访问地址
+      FDSS_SERIAL: 4bd2534e629718c1aed24b66437b3881 # 分布端的序列号，用来区分不同的 分布端，建议使用 hash 值
+      RAILS_ENV: development # rails 服务的运行环境
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:15 # 数据库镜像
+    environment:
+      POSTGRES_PASSWORD: 12345678 # 数据库初始密码

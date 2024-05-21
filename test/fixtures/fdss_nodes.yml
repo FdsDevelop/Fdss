@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  e_id: 
+  parent_node_id: 
+  node_type: 1
+  name: MyString
+  md5: MyString
+
+two:
+  e_id: 
+  parent_node_id: 
+  node_type: 1
+  name: MyString
+  md5: MyString
