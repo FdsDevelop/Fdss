@@ -36,4 +36,6 @@ Rails.application.configure do
   config.fdss.lan_address = ENV.fetch("FDSS_LAN_ADDRESS") { "http://localhost" }
   config.fdss.wan_address = ENV.fetch("FDSS_WAN_ADDRESS") { "http://example.com" }
   config.fdss.serial = ENV.fetch("FDSS_SERIAL"){""}
+  config.fdss.secret = ENV.fetch("FDSS_SECRET"){""}
+  config.fdss.sign = ENV.fetch("FDSS_SIGN"){""}
 end

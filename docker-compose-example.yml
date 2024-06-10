@@ -17,7 +17,10 @@ services:
       FDS_WAN_ADDRESS: http://example.com:3000  # 中心端的外网访问地址
 #      FDSS_WAN_ADDRESS: http://example.com:3001 # 分布端的外网访问地址（这里分布端可以不需要外网访问地址的），默认不配置
       FDSS_LAN_ADDRESS: http://localhost:3001 # 分布端局域网访问地址
-      FDSS_SERIAL: 4bd2534e629718c1aed24b66437b3881 # 分布端的序列号，用来区分不同的 分布端，建议使用 hash 值
+      # 分布端的序列号、密钥和签名全部都有中心端生成
+      FDSS_SERIAL: efdf4e4b # 分布端的序列号，用来区分不同的 分布端，建议使用 hash 值
+      FDSS_SECRET: 85522b4f68b613a65a95ca6ca013f848 # 密钥
+      FDSS_SIGN: 14dac9b8013390b0e7930b9918a0208e113b7ddb74fe74f7c41890fd7e3b46b5585389927abe09c79959481757ae4d4224bbdca5c17708796e596496a098317ba2a955df4b10104356937ea9fb57adf1967a22f7a09e03ad784e62e606a1c365ac7356d6f1ce9248d0090691af2f44cd85c05529130d74f0a9cb84c1ff7504b0 #签名
       RAILS_ENV: development # rails 服务的运行环境
     depends_on:
       - postgres

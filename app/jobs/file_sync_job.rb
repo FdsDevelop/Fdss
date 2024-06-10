@@ -1,4 +1,5 @@
 require 'net/http'
+include Aes
 class FileSyncJob < ApplicationJob
   queue_as :default
 
@@ -114,7 +115,11 @@ class FileSyncJob < ApplicationJob
   end
 
   def download_file(e_id,destination,md5)
-    uri = URI.parse("#{Rails.application.config.fds.wan_address}/fdss_download?id=#{e_id}")
+    serial = Rails.application.config.fdss.serial
+    payload_encrypt = encrypt({time_stamp: Time.current.to_i, data: {id: e_id}, sign: Rails.application.config.fdss.sign}.to_json)
+    pyaload_encode = URI.encode_www_form_component(payload_encrypt)
+    uri_str = "#{Rails.application.config.fds.wan_address}/fdss_download?serial=#{serial}&payload=#{pyaload_encode}"
+    uri = URI.parse(uri_str)
     Net::HTTP.start(uri.host,uri.port) do |http|
       request = Net::HTTP::Get.new(uri)
       http.request(request) do |response|
@@ -180,13 +185,7 @@ class FileSyncJob < ApplicationJob
   end
 
   def get_fds_root_id
-    url = URI.parse("#{Rails.application.config.fds.wan_address}/get_root_info")
-    http = Net::HTTP.new(url.host, url.port)
-    http.read_timeout = 30
-    request = Net::HTTP::Post.new(url.path)
-    request_body = {}
-    request.set_form_data({data: request_body.to_json})
-    response = http.request(request)
+    response = encrypt_post_request("#{Rails.application.config.fds.wan_address}/get_root_info",{},30)
     ret =JSON.parse(response.body)
     if ret["ret_code"] != 0
       raise ret["err_msg"]
@@ -195,13 +194,7 @@ class FileSyncJob < ApplicationJob
   end
 
   def get_ids
-    url = URI.parse("#{Rails.application.config.fds.wan_address}/get_all_node_ids")
-    http = Net::HTTP.new(url.host, url.port)
-    http.read_timeout = 30
-    request = Net::HTTP::Post.new(url.path)
-    request_body = {}
-    request.set_form_data({data: request_body.to_json})
-    response = http.request(request)
+    response = encrypt_post_request("#{Rails.application.config.fds.wan_address}/get_all_node_ids",{},30)
     ret =JSON.parse(response.body)
     if ret["ret_code"] != 0
       raise ret["err_msg"]
@@ -210,15 +203,7 @@ class FileSyncJob < ApplicationJob
   end
 
   def get_infos(ids)
-
-    url = URI.parse("#{Rails.application.config.fds.wan_address}/get_nodes_info")
-    http = Net::HTTP.new(url.host, url.port)
-    http.read_timeout = 30
-    request = Net::HTTP::Post.new(url.path)
-    request_body = {}
-    request_body[:node_ids] = ids
-    request.set_form_data({data: request_body.to_json})
-    response = http.request(request)
+    response = encrypt_post_request("#{Rails.application.config.fds.wan_address}/get_nodes_info",{node_ids: ids},30)
     ret = JSON.parse(response.body)
     if ret["ret_code"] != 0
       raise ret["err_msg"]
